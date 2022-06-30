@@ -20,19 +20,30 @@ class addpost extends StatefulWidget {
 class _addpostState extends State<addpost> {
   Uint8List? _file;
   final TextEditingController _descriptioncontroller = TextEditingController();
-
+  bool _isLoading = false;
   void postImage(
     String uid,
     String username,
     String profImage,
   ) async {
+    setState(() {
+      _isLoading = true;
+    });
     try {
       String res = await FirestoreMethods().uploadPost(
           _descriptioncontroller.text, _file!, uid, username, profImage);
 
-      if (res == "sucess") {
+      if (res == "success") {
+        setState(() {
+          _isLoading = false;
+        });
+        clearimage();
+
         showsnackbar("Posted!", context);
       } else {
+        setState(() {
+          _isLoading = false;
+        });
         showsnackbar(res, context);
       }
     } catch (e) {
@@ -85,6 +96,12 @@ class _addpostState extends State<addpost> {
         });
   }
 
+  void clearimage() {
+    setState(() {
+      _file = null;
+    });
+  }
+
   @override
   void dispose() {
     super.dispose();
@@ -106,8 +123,10 @@ class _addpostState extends State<addpost> {
         : Scaffold(
             appBar: AppBar(
               backgroundColor: mobileBackgroundColor,
-              leading:
-                  IconButton(icon: Icon(Icons.arrow_back), onPressed: () {}),
+              leading: IconButton(
+                icon: Icon(Icons.arrow_back),
+                onPressed: clearimage,
+              ),
               title: const Text('Post to'),
               actions: [
                 TextButton(
@@ -125,6 +144,12 @@ class _addpostState extends State<addpost> {
             ),
             body: Column(
               children: [
+                _isLoading
+                    ? const LinearProgressIndicator()
+                    : Padding(
+                        padding: EdgeInsets.only(top: 0),
+                      ),
+                const Divider(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.start,
