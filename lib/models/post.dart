@@ -9,7 +9,7 @@ class Post {
   final datePublished;
   final String postUrl;
   final String profImage;
-  final likes;
+  final List likes;
 
   const Post({
     required this.description,
@@ -29,7 +29,7 @@ class Post {
         "postUrl": postUrl,
         "profImage": profImage,
         "datePublished": datePublished,
-        "following": likes,
+        "likes": likes,
         "postId": postId,
       };
   static Post fromsnap(DocumentSnapshot snap) {
